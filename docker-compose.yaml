@@ -1,0 +1,52 @@
+services:
+  pyspark:
+    image: quay.io/jupyter/pyspark-notebook:latest
+    container_name: pyspark
+    ports:
+      - "8888:8888"
+      - "4040-4050:4040-4050"
+    volumes:
+      - ./work:/home/jovyan/work
+      - ./data:/home/jovyan/data
+      - ./jars:/home/jovyan/jars
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+    command: >
+      start-notebook.py
+      --ServerApp.token=''
+      --ServerApp.password=''
+      --ServerApp.root_dir=/home/jovyan/work
+
+  postgres:
+    image: postgres:17
+    container_name: postgres_spark
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse_spark
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase_spark
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  clickhouse_data:
